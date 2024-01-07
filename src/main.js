@@ -2,7 +2,7 @@ import './style.css'
 
 document.addEventListener("DOMContentLoaded" , () => {
 
-  if(localStorage.getItem("accesstoken")){
+  if(localStorage.getItem("accessToken")){
     window.location.href = "Dashboard/Dashboard.html"
   }
   else {
