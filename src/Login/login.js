@@ -1,7 +1,9 @@
-const CLIENT_ID = 'e9287ef57526422695b5bf665dbdf3af'
+import { ACCESS_TOKEN, EXPIRES_IN, TOKEN_TYPE } from "../common"
+
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
 const  REDIRECT_URI =  'http://localhost:5173/Login/login.html'
 const scopes = "user-top-read user-follow-read playlist-read-private user-library-read"
-const ACCESS_TOKEN_KEY = "accessToken"
+
 const APP_URL = 'http://localhost:5173'
 
 
@@ -20,16 +22,16 @@ document.addEventListener('DOMContentLoaded' , ()=> {
 
 window.setItemsInLocalStorage = ({ accessToken , tokenType , expiresIn}) =>
 {
-    localStorage.setItem("accessToken" , accessToken)
-    localStorage.setItem("tokenType" , tokenType)
-    localStorage.setItem("expiresIn" , expiresIn)
+    localStorage.setItem(ACCESS_TOKEN, accessToken)
+    localStorage.setItem(TOKEN_TYPE , tokenType)
+    localStorage.setItem(EXPIRES_IN , expiresIn)
 }
 
 
 window.addEventListener("load" , () => {
-    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY)
+    const accessToken = localStorage.getItem(ACCESS_TOKEN)
     if(accessToken){
-        window.location.href= `${APP_URL}/Dashboard/Dashboard.html`
+       window.location.href= `${APP_URL}/Dashboard/Dashboard.html`
     }
     // if (!window.opener && !window.opener.closed) {
     
@@ -48,7 +50,9 @@ window.addEventListener("load" , () => {
         if(accessToken) {
               window.close()
               window.opener.setItemsInLocalStorage({accessToken , tokenType , expiresIn})
-              window.location.href = APP_URL
-        } 
+         window.location.href = APP_URL
+        } else {
+            window.close()
+        }
     } 
 })
