@@ -5,7 +5,11 @@ export default {
     colors: {
         "green" : "#1DB954" ,
         "Dark" : "#191414" ,
-        "white" : "#FFFFFF"
+        "white" : "#FFFFFF" ,
+        "light-black" : "#282828" ,
+        "secondary" : "#b3b3b3" ,
+        "gray" : "#535353"
+
     },
     extend: {},
   },

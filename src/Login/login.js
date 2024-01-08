@@ -13,7 +13,7 @@ const  authorizeUser = () => {
 
 
 document.addEventListener('DOMContentLoaded' , ()=> {
-    const loginButton = document.getElementById("login_to_spotify")
+    const loginButton = document.getElementById("login_to_spotify  ")
     loginButton.addEventListener('click' , authorizeUser)
 
 })
