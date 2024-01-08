@@ -23,7 +23,7 @@ window.setItemsInLocalStorage = ({ accessToken , tokenType , expiresIn}) =>
 {
     localStorage.setItem(ACCESS_TOKEN, accessToken)
     localStorage.setItem(TOKEN_TYPE , tokenType)
-    localStorage.setItem(EXPIRES_IN , ())
+    localStorage.setItem(EXPIRES_IN ,  Date.now() )
     window.location.href = APP_URL
 }
 
