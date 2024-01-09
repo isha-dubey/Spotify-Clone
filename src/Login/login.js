@@ -1,20 +1,28 @@
 import { ACCESS_TOKEN, EXPIRES_IN, TOKEN_TYPE } from "../common"
+import { VITE_REDIRECT_URI } from ".env" 
 
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
 const  REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI
 const scopes = "user-top-read user-follow-read playlist-read-private user-library-read"
 const APP_URL = import.meta.env.VITE_APP_URL
 
+console.log('CLIENT_ID:', CLIENT_ID);
+console.log('REDIRECT_URI:', REDIRECT_URI);
+console.log('APP_URL:', APP_URL);
+
+
+
+
 
 const  authorizeUser = () => {
     const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${REDIRECT_URI}&scope=${scopes}&show_dialog=true`
-    window.open(url , "login" , "width=500px ,height=500px" )
+    window.open( url , "login" , "width=500px ,height=500px" )
 }
 
 
 document.addEventListener('DOMContentLoaded' , ()=> {
-    const loginButton = document.getElementById("login_to_spotify  ")
-    loginButton.addEventListener('click' , authorizeUser)
+    const loginButton = document.getElementById("login_to_spotify")
+    loginButton.addEventListener("click" , authorizeUser)
 
 })
 
