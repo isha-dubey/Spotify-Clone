@@ -11,6 +11,9 @@ export default {
         "gray" : "#535353"
 
     },
+    gridTemplateColumns : {
+        'auto-fill-cards' : 'repeat(auto-fill, minmax(200px , 1fr))'
+    },
     extend: {},
   },
   plugins: [],
