@@ -1,13 +1,13 @@
 import { ACCESS_TOKEN, EXPIRES_IN, logout, TOKEN_TYPE } from "./common"
 
-const BASE_API_URL = import.meta.env.VITE_API_BASE_URL
+const BASE_API_URL = 'https://api.spotify.com/v1'
 
 const getAccessToken = () => {
     
     const accessToken =localStorage.getItem(ACCESS_TOKEN)
     const tokenType =localStorage.getItem(TOKEN_TYPE)
     const expiresIn =localStorage.getItem(EXPIRES_IN)
-    if(Date.now() < expiresIn ){
+    if( Date.now() < expiresIn ){
         return {accessToken ,tokenType }
     }
     else{

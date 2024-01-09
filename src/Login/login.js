@@ -1,16 +1,14 @@
 import { ACCESS_TOKEN, EXPIRES_IN, TOKEN_TYPE } from "../common"
-import { VITE_REDIRECT_URI } from ".env" 
 
-const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
-const  REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI
+
+const CLIENT_ID = 'e9287ef57526422695b5bf665dbdf3af'
+const  REDIRECT_URI =  "http://localhost:5173/Login/login.html"
 const scopes = "user-top-read user-follow-read playlist-read-private user-library-read"
-const APP_URL = import.meta.env.VITE_APP_URL
+const APP_URL =  "http://localhost:5173"
 
 console.log('CLIENT_ID:', CLIENT_ID);
 console.log('REDIRECT_URI:', REDIRECT_URI);
 console.log('APP_URL:', APP_URL);
-
-
 
 
 
@@ -31,7 +29,7 @@ window.setItemsInLocalStorage = ({ accessToken , tokenType , expiresIn}) =>
 {
     localStorage.setItem(ACCESS_TOKEN, accessToken)
     localStorage.setItem(TOKEN_TYPE , tokenType)
-    localStorage.setItem(EXPIRES_IN ,  Date.now() )
+    localStorage.setItem(EXPIRES_IN ,  (Date.now() + (expiresIn * 1000)) )
     window.location.href = APP_URL
 }
 
@@ -58,7 +56,7 @@ window.addEventListener("load" , () => {
         if(accessToken) {
               window.close()
               window.opener.setItemsInLocalStorage({accessToken , tokenType , expiresIn})
-         window.location.href = APP_URL
+      ///   window.location.href = APP_URL
         } else {
             window.close()
         }
