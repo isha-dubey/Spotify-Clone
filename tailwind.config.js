@@ -4,9 +4,11 @@ export default {
   theme: {
     colors: {
         "green" : "#1DB954" ,
+        "black-base" : "#121212" ,
         "Dark" : "#191414" ,
-        "white" : "#FFFFFF" ,
+        "black-secondary" : "#171818" ,
         "light-black" : "#282828" ,
+        "white" : "#FFFFFF" ,
         "secondary" : "#b3b3b3" ,
         "gray" : "#535353"
 

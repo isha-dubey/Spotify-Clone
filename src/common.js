@@ -6,7 +6,8 @@ export const APP_URL = "http://localhost:5173"
 
 export const ENDPOINT = {
     userinfo: "me" ,
-    featuredPlaylist : "browse/featured-playlists?limit=5 "
+    featuredPlaylist : "browse/featured-playlists?limit=5 " ,
+    toplists : "browse/categories/toplists/playlists?limit=10"
 }
 
 

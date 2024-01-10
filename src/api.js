@@ -8,7 +8,7 @@ const getAccessToken = () => {
     const tokenType =localStorage.getItem(TOKEN_TYPE)
     const expiresIn =localStorage.getItem(EXPIRES_IN)
     if( Date.now() < expiresIn ){
-         {accessToken ,tokenType }
+      return {accessToken ,tokenType }
     }
     else{
         logout()
