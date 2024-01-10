@@ -18,7 +18,8 @@ const loadUserProfile = async() => {
  const displayNameElement = document.querySelector("#display-name")
  const {display_name : displayName , images} = await FetchRequest(ENDPOINT.userinfo)
   
- if(images?.length){
+ if(images?.length)
+ {
     defaultImage.classList.add("hidden")
  } else {
     defaultImage.classList.remove("hidden")
