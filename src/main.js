@@ -6,6 +6,6 @@ document.addEventListener("DOMContentLoaded" , () => {
  window.location.href = "Dashboard/Dashboard.html"
   }
   else {
-    window.location.href = "Login/login.html"
+    window.location.href =  "Login/login.html"
   }
 })
