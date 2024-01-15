@@ -18,3 +18,8 @@ export const logout = () => {
     window.location.href = APP_URL
 
 }
+
+export const SECTIONTYPE = {
+    DASHBOARD : "DASHBOARD" ,
+    PLAYLIST : "PLAYLIST"
+}

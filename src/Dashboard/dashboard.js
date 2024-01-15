@@ -1,4 +1,4 @@
-import { ENDPOINT, logout } from "../common"
+import { ENDPOINT, logout, SECTIONTYPE } from "../common"
 import { FetchRequest } from "../api"
 
 const onProfileClick = (event) => {
@@ -84,8 +84,23 @@ const fillContentForDashboard = () => {
    pageContent.innerHTML = innerHTML
 }
 
+const loadSections = (section) => {
+   if(section.type === SECTIONTYPE){
+      fillContentForDashboard()
+      loadPlaylists()
+
+   } else {
+      //load the elements for playlist
+   }
+
+}
+
+
 document.addEventListener("DOMContentLoaded" , () =>{
 loadUserProfile()
+const section = {type : SECTIONTYPE.DASHBOARD}
+history.pushState(section , "" , "playlist")
+
 fillContentForDashboard()
 loadPlaylists()
 
@@ -95,4 +110,19 @@ loadPlaylists()
       profileMenu.classList.remove("hidden")
      }
   })
+
+  document.querySelector(".content").addEventListener("scroll" , (event) => {
+
+  const {scrollTop} = event.target
+  const header = document.querySelector(".header")
+  if(scrollTop >= header.offsetHeight){
+   header.classList.add("sticky" , "top-0" , "bg-black-secondary" )
+   header.classList.remove("bg-transparent")
+  } else {
+   header.classList.remove("sticky" , "top-0" , "bg-black-secondary" )
+   header.classList.add("bg-transparent")
+  }
+
+  })
+
 })
