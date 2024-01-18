@@ -22,3 +22,13 @@
     grid-area: now-playing;
 }
 
+.track:hover .tracknum , .track.selected .tracknum {
+    visibility: hidden;
+
+}
+
+.track:hover .play ,
+.track.selected .play
+{
+    visibility: visible;
+}
