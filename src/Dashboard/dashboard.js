@@ -32,8 +32,11 @@ const loadUserProfile = async() => {
 }
 
 
-const onPlaylistItemClicked = (event) => {
+const onPlaylistItemClicked = (event , id) => {
    console.log(event.target)
+   const section = {type : SECTIONTYPE.PLAYLIST , playlist : id }
+   history.pushState(section, "" , "playlist")
+   loadSections(section)
 } 
 
 const loadPlaylist = async(endpoint , elementId) =>
@@ -47,7 +50,7 @@ const loadPlaylist = async(endpoint , elementId) =>
       playlistItem.className = "bg-black-secondary  rounded p-4 border-solid border-2 hover:cursor-pointer hover:bg-light-black"
       playlistItem.id = id
       playlistItem.setAttribute("data-type" , "playlist")
-      playlistItem.addEventListener("click" , onPlaylistItemClicked )
+      playlistItem.addEventListener("click" , (event) => {onPlaylistItemClicked(event , id)} )
        
       const [{url : imageurl}] = images
       playlistItem.innerHTML = `
@@ -84,45 +87,118 @@ const fillContentForDashboard = () => {
    pageContent.innerHTML = innerHTML
 }
 
+const formatTime = (duration) => {
+   const min = Math.floor(duration/60_000)
+   const sec = ((duration % 6_000) / 1000).toFixed(0)
+   const formattedTime = sec == 60?
+   min +1 + ":00":min + ":" + (sec < 10?"0":"") + sec
+   return formattedTime
+}
+
+
+const loadPlaylistTracks = ({tracks}) => {
+   const trackSections = document.querySelector("#tracks")
+   let trackNo = 1 
+  for ( let trackitem  of tracks.items ){
+       let {id , artists , name , album , duration_ms: duration} = trackitem.track
+      let track = document.createElement("section")
+      track.id = id
+      track.className = "track p-1 grid grid-cols-[50px_2fr_1fr_50px] gap-4 items-center justify-items-start text-secondary rounder-md hover:bg-light-black"
+      let image = album.images.find(img => img.height === 64)
+
+       track.innerHTML = `   <p class="justify-self-center">${trackNo++}</p>
+       <section class="grid grid-cols-[auto_1fr] place-items-center gap-2 ">
+      <img class="h-8 w-8" src="${image.url}" alt="${name}">
+      <article class="flex flex-col ">
+          <h2 class="text-white text-xl ">${name}</h2>
+          <p class="text-sm">${Array.from(artists , artist => artist.name).join(", ")}</p>
+      </article>
+       </section>
+          <p>${album.name}</p>
+          <p>${formatTime(duration)}</p>
+  `
+   trackSections.appendChild(track)
+}
+}
+
+const fillContentForPlaylist = async(playlistid) => {
+   const playlist = await FetchRequest(`${ENDPOINT.playlist}/${playlistid}`)
+   const pageContent = document.querySelector("#page-content")
+   pageContent.innerHTML = ` <header id="playlist-header" class="px-8 py-4">
+   <nav>
+        <ul class="grid grid-cols-[50px_2fr_1fr_50px] gap-4 text-secondary ">
+           <li class="justify-self-center" >#</li>
+           <li>Title</li>
+           <li>Album</li>
+           <li>⏱</li>
+        </ul>
+   </nav>
+  </header> 
+  <section class="px-8 text-secondary " id="tracks">
+   </section>
+
+  `
+  loadPlaylistTracks(playlist)
+   console.log(playlist)
+
+
+}
+
+const onContentScroll =   (event) => {
+
+   const {scrollTop} = event.target
+   const header = document.querySelector(".header")
+   if(scrollTop >= header.offsetHeight){
+    header.classList.add("sticky" , "top-0" , "bg-black-secondary" )
+    header.classList.remove("bg-transparent")
+   } else {
+    header.classList.remove("sticky" , "top-0" , "bg-black-secondary" )
+    header.classList.add("bg-transparent")
+   }
+ if (history.state.type === SECTIONTYPE.PLAYLIST){
+    const playlistHeader  = document.querySelector("#playlist-header")
+    if(scrollTop >= playlistHeader.offsetHeight){
+     playlistHeader.classList.add("sticky" , `top-[${header.offsetHeight}px]`)
+    }
+ }
+ 
+   }
+
 const loadSections = (section) => {
-   if(section.type === SECTIONTYPE){
+   if(section.type === SECTIONTYPE.DASHBOARD){
       fillContentForDashboard()
       loadPlaylists()
 
-   } else {
+   } else if (section.type === SECTIONTYPE.PLAYLIST ) {
       //load the elements for playlist
+      fillContentForPlaylist(section.playlist)
    }
+
+   document.querySelector(".content").removeEventListener("scroll" , onContentScroll)
+
+   document.querySelector(".content").addEventListener("scroll" , onContentScroll)
+
 
 }
 
 
 document.addEventListener("DOMContentLoaded" , () =>{
 loadUserProfile()
-const section = {type : SECTIONTYPE.DASHBOARD}
-history.pushState(section , "" , "playlist")
+const section = { type : SECTIONTYPE.DASHBOARD }
+history.pushState(section , "" , "")
+loadSections(section)
 
-fillContentForDashboard()
-loadPlaylists()
-
-  document.addEventListener("click" , () => {
+document.addEventListener("click" , () => {
     const profileMenu = document.querySelector("#profile-menu") 
      if (!profileMenu.classList.contains("hidden")){
       profileMenu.classList.remove("hidden")
      }
   })
 
-  document.querySelector(".content").addEventListener("scroll" , (event) => {
+ 
 
-  const {scrollTop} = event.target
-  const header = document.querySelector(".header")
-  if(scrollTop >= header.offsetHeight){
-   header.classList.add("sticky" , "top-0" , "bg-black-secondary" )
-   header.classList.remove("bg-transparent")
-  } else {
-   header.classList.remove("sticky" , "top-0" , "bg-black-secondary" )
-   header.classList.add("bg-transparent")
-  }
-
+  window.addEventListener("popstate" , (event) => {
+   loadSections(event.state)
   })
 
 })
