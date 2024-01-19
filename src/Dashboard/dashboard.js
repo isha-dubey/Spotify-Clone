@@ -107,8 +107,22 @@ const onTrackSelection = (id , event ) => {
   })
 }
 
-const onPlayTrack = (event, {image, artistNames , name , previewURL , duration , id }) => {
+const onPlayTrack = (event , {image, artistNames , name , previewURL , duration , id }) => {
+   console.log("hello");
 console.log(image, artistNames , name , previewURL , duration , id )
+{/* <img id="now-playing-image" class="h-12 w-12" src="" srcset="">
+                <section class="flex flex-col justify-center ">
+                    <h2 id="now-playing-song" class="text-sm font-semibold text-white">song title</h2>
+                    <p id="now-playing-artists" class="text-xs">song artists</p>
+                </section>  */}
+                const nowPlayingSongImage = document.querySelector("#now-playing-image")
+                nowPlayingSongImage.src = image.url
+                const songTitle = document.querySelector("#now-playing-song")
+                const artists = document.querySelector("#now-playing-artists")
+                 
+
+                songTitle.textContent = name
+                artists.textContent = artistNames
 }
 
 const loadPlaylistTracks = ({ tracks }) => {
@@ -148,7 +162,7 @@ const loadPlaylistTracks = ({ tracks }) => {
 const fillContentForPlaylist = async(playlistid) => {
    const playlist = await FetchRequest(`${ENDPOINT.playlist}/${playlistid}`)
    const pageContent = document.querySelector("#page-content")
-   pageContent.innerHTML = ` <header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px] ">
+   pageContent.innerHTML = ` <header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px] z-10 ">
    <nav class="py-2 ">
         <ul class="grid grid-cols-[50px_1fr_1fr_50px] gap-4 text-secondary ">
            <li class="justify-self-center" >#</li>
