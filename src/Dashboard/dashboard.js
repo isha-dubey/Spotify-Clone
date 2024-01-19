@@ -1,6 +1,14 @@
 import { ENDPOINT, logout, SECTIONTYPE } from "../common"
 import { FetchRequest } from "../api"
 
+const audio = new Audio()
+const volume = document.querySelector("#volume")
+const playButton = document.querySelector("#play")
+const totalSongDuration = document.querySelector("#total-song-duration")
+const songDurationCompleted = document.querySelector("#song-duration-completed")
+const songProgress = document.querySelector("#progress")
+
+
 const onProfileClick = (event) => {
    event.stopPropagation()
     const profileMenu = document.querySelector("#profile-menu")
@@ -26,8 +34,7 @@ const loadUserProfile = async() => {
  }
 
  profileButton.addEventListener("click" , onProfileClick )
-
-  displayNameElement.textContent = displayName
+ displayNameElement.textContent = displayName
 
 }
 
@@ -107,6 +114,12 @@ const onTrackSelection = (id , event ) => {
   })
 }
 
+// const timeline = document.querySelector("#")
+
+const onAudioMetaDataLoaded = () => {
+   totalSongDuration.textContent = audio.duration
+}
+
 const onPlayTrack = (event , {image, artistNames , name , previewURL , duration , id }) => {
    console.log("hello");
 console.log(image, artistNames , name , previewURL , duration , id )
@@ -123,6 +136,11 @@ console.log(image, artistNames , name , previewURL , duration , id )
 
                 songTitle.textContent = name
                 artists.textContent = artistNames
+               
+                audio.src = previewURL
+                audio.removeEventListener("loadedmetadata" , onAudioMetaDataLoaded)
+                audio.addEventListener("loadedmetadata" , onAudioMetaDataLoaded )
+                audio.play()
 }
 
 const loadPlaylistTracks = ({ tracks }) => {
