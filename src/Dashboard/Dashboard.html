@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spotify Player</title>
-    <link rel="stylesheet" href="../style.css">  <!-- //this should be added in every html file -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="../style.css">  <!-- //this should be added in every html file -->
 </head>
 <body class="h-screen  bg-black text-white">
 
@@ -71,33 +71,35 @@
             </section>
         </section>
     </article>
-        <footer class="now-playing order-t border-t-light-black bg-black-secondary px-4 text-secondary">
+        <footer class="now-playing border-t border-t-light-black bg-black-secondary px-4 text-secondary">
             
         <section class=" grid grid-cols-[1fr_2fr_1fr] gap-4">
             <section class="grid grid-cols-[auto_1fr] place-content-center gap-4 " >
-                <img id="now-playing-image" class="h-12 w-12" src=""srcset="">
+                <img id="now-playing-image" class="h-12 w-12" src="" srcset="">
                 <section class="flex flex-col justify-center ">
-                    <h2 id="now-playing-song" class="text-sm font-semibold text-white"> song title</h2>
+                    <h2 id="now-playing-song" class="text-sm font-semibold text-white">song title</h2>
                     <p id="now-playing-artists" class="text-xs">song artists</p>
                 </section>
             </section>
             <!-- section for audio control -->
-            <section id="audio-control" class="">
-              <section class="flex items-center justify-center hover:text-white ">
-                <button id="prev"><span class="material-symbols-outlined">
-                    
-                    </span></button>
-                <button id="play"><span class="material-symbols-outlined">
-                    
-                    </span></button>
-                <button id="next"><span class="material-symbols-outlined">
-                     
-                    </span></button>
+            <section id="audio-control" class=" flex flex-col justify-center items-center">
+              <section class="flex items-center justify-center  ">
+                <button id="prev" class="hover:text-white"><span class="material-symbols-outlined"> skip_previous</span></button>
+                <button id="play" class="hover:text-white"><span class="material-symbols-outlined">play_circle</span></button>
+                <button id="next" class="hover:text-white"><span class="material-symbols-outlined">skip_next</span></button>
               </section>
+            
+            <section class="w-full flex items-center justify-center gap-4 p-1">
+            <span id="song-duration-completed">0:00</span>
+            <section id="progess" class="h-2 w-full cursor-pointer rounded-3xl bg-secondary"></section>
+            <span id="total-song-duration">0:00</span>
             </section>
-            <!-- section for volume -->
-            <section >
+        </section>
           
+            <!-- section for volume -->
+            <section id="volume-control">
+                <span class="material-symbols-outlined">volume_up</span>
+                <input type="range" id="volume" name="" value="100" min="0" max="100">
             </section>
         </section>
         

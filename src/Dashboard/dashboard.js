@@ -111,17 +111,17 @@ const onPlayTrack = (event, {image, artistNames , name , previewURL , duration ,
 console.log(image, artistNames , name , previewURL , duration , id )
 }
 
-const loadPlaylistTracks = ({tracks}) => {
+const loadPlaylistTracks = ({ tracks }) => {
    const trackSections = document.querySelector("#tracks")
    let trackNo = 1 
-   let artistNames = Array.from(artists , artist => artist.name).join(", ")
-  for ( let trackitem  of tracks.items ){
-       let {id , artists , name , album , duration_ms: duration , preview_url : previewURL} = trackitem.track
+   for ( let trackitem  of tracks.items ){
+      let {id , artists , name , album , duration_ms: duration , preview_url : previewURL} = trackitem.track
       let track = document.createElement("section")
       track.id = id
       track.className = "track p-1 grid grid-cols-[50px_1fr_1fr_50px] gap-4 items-center justify-items-start text-secondary rounder-md hover:bg-light-black"
       let image = album.images.find(img => img.height === 64)
-
+      
+      let artistNames = Array.from(artists , artist => artist.name).join(", ")
        track.innerHTML = `   <p class="relative w-full flex items-center justify-self-center"><span class="tracknum" >${trackNo++}</span></p>
        <section class="grid grid-cols-[auto_1fr] place-items-center gap-2 ">
       <img class="h-10 w-10" src="${image.url}" alt="${name}">
@@ -162,8 +162,8 @@ const fillContentForPlaylist = async(playlistid) => {
    </section>
 
   `
+  console.log(playlist)
   loadPlaylistTracks(playlist)
-   console.log(playlist)
 
 
 }
