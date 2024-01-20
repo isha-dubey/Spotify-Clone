@@ -7,6 +7,7 @@ const playButton = document.querySelector("#play")
 const totalSongDuration = document.querySelector("#total-song-duration")
 const songDurationCompleted = document.querySelector("#song-duration-completed")
 const songProgress = document.querySelector("#progress")
+const timeline = document.querySelector("#timeline")
 
 
 const onProfileClick = (event) => {
@@ -116,9 +117,34 @@ const onTrackSelection = (id , event ) => {
 
 // const timeline = document.querySelector("#")
 
+const updateIconsForPlayMode = (id) => {
+   playButton.querySelector("span").textContent = "pause_circle"
+   const playButtonInTracks = document.querySelector(`#play-track${id}`)
+   playButtonInTracks.innerHTML = `<span class="material-symbols-outlined">
+   pause
+   </span>`
+
+}
+
 const onAudioMetaDataLoaded = () => {
    totalSongDuration.textContent = audio.duration
+   updateIconsForPlayMode(id)
 }
+
+const onNowPlayingPlayButtonClicked = (id) => {
+   if(audio.paused) {
+   audio.play()
+   updateIconsForPlayMode(id)
+   } else {
+      audio.pause()
+      playButton.querySelector("span").textContent = "play_circle"
+   const playButtonInTracks = document.querySelector(`#play-track${id}`)
+   playButtonInTracks.innerHTML = "▷"
+   }
+   
+
+}
+
 
 const onPlayTrack = (event , {image, artistNames , name , previewURL , duration , id }) => {
    console.log("hello");
@@ -138,9 +164,24 @@ console.log(image, artistNames , name , previewURL , duration , id )
                 artists.textContent = artistNames
                
                 audio.src = previewURL
-                audio.removeEventListener("loadedmetadata" , onAudioMetaDataLoaded)
-                audio.addEventListener("loadedmetadata" , onAudioMetaDataLoaded )
+                audio.removeEventListener("loadedmetadata" ,(  ) => onAudioMetaDataLoaded(id))
+                
+               audio.addEventListener("loadedmetadata" , (  ) => onAudioMetaDataLoaded(id) )
+               playButton.addEventListener("clck")
                 audio.play()
+
+
+                clearInterval(progressInterval)
+                timeline.addEventListener("click" , () =>  onNowPlayingPlayButtonClicked(id) )
+                progressInterval = setInterval(() => {
+                   if(audio.paused)
+                   {
+                      return
+                     }
+                 songDurationCompleted.textContent = `0:${audio.currentTime.toFixed(0)<10 ? "0:0" + audio.currentTime.toFixed(0): "0:" + audio.currentTime.toFixed(0)}`
+                 songProgress.style.width = `${(audio.currentTime / audio.duration) * 100}%`
+               }, 100);
+                
 }
 
 const loadPlaylistTracks = ({ tracks }) => {
