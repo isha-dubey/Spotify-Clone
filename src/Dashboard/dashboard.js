@@ -265,8 +265,6 @@ document.addEventListener("click" , () => {
      }
   })
 
- 
-
   window.addEventListener("popstate" , (event) => {
    loadSections(event.state)
   })
