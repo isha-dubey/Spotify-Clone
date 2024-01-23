@@ -1,6 +1,9 @@
 import { ENDPOINT, logout, SECTIONTYPE } from "../common"
 import { FetchRequest } from "../api"
 
+
+const controller = new AbortController()
+const signal = controller.signal
 const audio = new Audio()
 const volume = document.querySelector("#volume")
 const playButton = document.querySelector("#play")
@@ -121,7 +124,7 @@ const updateIconsForPlayMode = (id) => {
    playButton.querySelector("span").textContent = "pause_circle"
    const playButtonInTracks = document.querySelector(`#play-track${id}`)
    playButtonInTracks.innerHTML = "||"
-   playButtonInTracks.setAttribute("data-play" , "")
+   playButtonInTracks.setAttribute("data-play" , "true")
 
 }
 
@@ -151,7 +154,7 @@ const onNowPlayingPlayButtonClicked = (id) => {
 
 const onPlayTrack = (event , {image, artistNames , name , previewURL , duration , id }) => {
    console.log("hello");
-   const buttonWithDataPlay = document.querySelector("[data-play]")
+   const buttonWithDataPlay = document.querySelector(`[data-play="true"]`)
    // const button = event.target
    if(buttonWithDataPlay?.id === `play-track${id}`) {
       if(audio.paused){
@@ -162,7 +165,11 @@ const onPlayTrack = (event , {image, artistNames , name , previewURL , duration 
          updateIconsForPauseMode(id)
       }
    } else {
-      buttonWithDataPlay?. removeAttribute("data-play")
+      document.querySelectorAll("[data-play]").forEach(button => {
+         button.setAttribute("data-play","false") 
+         console.log(button) })
+
+      buttonWithDataPlay?.setAttribute("data-play" , "false") 
 
 console.log(image, artistNames , name , previewURL , duration , id )
 {/* <img id="now-playing-image" class="h-12 w-12" src="" srcset="">
@@ -181,9 +188,8 @@ console.log(image, artistNames , name , previewURL , duration , id )
                
                //   if(!audio.paused){}
                 audio.src = previewURL
-                audio.removeEventListener("loadedmetadata" ,() => onAudioMetaDataLoaded(id))
-                
-                audio.addEventListener("loadedmetadata" , (  ) => onAudioMetaDataLoaded(id) )
+               controller.abort()                
+                audio.addEventListener("loadedmetadata" , (  ) => onAudioMetaDataLoaded(id) , {signal : controller.signal} )
                 playButton.addEventListener("loadedmetadata" , () => onNowPlayingPlayButtonClicked(id) )
                 audio.play()
                 
@@ -321,6 +327,10 @@ document.addEventListener("click" , () => {
      if (!profileMenu.classList.contains("hidden")){
       profileMenu.classList.remove("hidden")
      }
+  })
+
+  volume.addEventListener("change" , () => {
+   audio.volume = volume.value / 100
   })
 
   window.addEventListener("popstate" , (event) => {
