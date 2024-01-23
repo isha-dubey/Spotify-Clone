@@ -114,12 +114,14 @@ const onTrackSelection = (id , event ) =>
 }
 
 const updateIconsForPlayMode = (id) => {
+   const playButton = document.querySelector("#play")
    playButton.querySelector("span").textContent = "pause_circle"
-   const playButtonInTracks = document.querySelector(`#play-track${id}`)
-   playButtonInTracks.innerHTML = "pause"
-   playButtonInTracks.setAttribute("data-play" , "true")
-
+   const playButtonInTracks = document.querySelector(`#play-track-${id}`)
+   if(playButtonInTracks){
+      playButtonInTracks.innerHTML = "pause"
+   }
 }
+
 
 
 const onAudioMetaDataLoaded = (id) => {
@@ -128,9 +130,12 @@ const onAudioMetaDataLoaded = (id) => {
 }
 
 const updateIconsForPauseMode = (id) => {
+   const playButton = document.querySelector("#play")
    playButton.querySelector("span").textContent = "play_circle"
-   const playButtonInTracks = document.querySelector(`#play-track${id}`)
-   playButtonInTracks.textContent = "play_arrow"
+   const playButtonInTracks = document.querySelector(`#play-track-${id}`)
+   if(playButtonInTracks){
+      playButtonInTracks.textContent = "play_arrow"
+   }
 }
 
 
@@ -155,6 +160,9 @@ const togglePlay = () => {
 }
 
 const playTrack = (event , {image, artistNames , name , previewURL , duration , id }) => {
+   if(event?.stopPropagation){
+      event.stopPropagation
+   }
    console.log("hello");
    const buttonWithDataPlay = document.querySelector(`[data-play="true"]`)
    if(audio.src === previewURL) {
@@ -168,10 +176,11 @@ const playTrack = (event , {image, artistNames , name , previewURL , duration , 
    buttonWithDataPlay?.setAttribute("data-play" , "false") 
    console.log(image, artistNames , name , previewURL , duration , id )
    const nowPlayingSongImage = document.querySelector("#now-playing-image")
-   nowPlayingSongImage.src = image.url
-   const audioControl = document.querySelector("#")
    const songTitle = document.querySelector("#now-playing-song")
    const artists = document.querySelector("#now-playing-artists")
+   const audioControl = document.querySelector("#audio-control")
+   audioControl.setAttribute("data-track-id" , id)
+   nowPlayingSongImage.src = image.url
    songTitle.textContent = name
    artists.textContent = artistNames
    audio.src = previewURL 
@@ -196,7 +205,7 @@ const loadPlaylistTracks = ({ tracks }) => {
             <section class="grid grid-cols-[auto_1fr] place-items-center gap-2 ">
             <img class="h-10 w-10" src="${image.url}" alt="${name}">
             <article class="flex flex-col gap-2 justify-center ">
-            <h2 class="text-white text-base line-clamp-1">${name}</h2>
+            <h2 class="text-white text-base line-clamp-1 song-title">${name}</h2>
             <p class="text-xs line-clamp-1">${artistNames}</p>
             </article>
             </section>
@@ -205,10 +214,10 @@ const loadPlaylistTracks = ({ tracks }) => {
             `
          track.addEventListener("click" , (event)  => onTrackSelection(id , event) )
          const playButton = document.createElement("button")
-         playButton.id = `play-track${id}`
+         playButton.id = `play-track-${id}`
          playButton.className = `play w-fill absolute left-0 text-lg invisible material-symbols-outlined `
          playButton.textContent = "play_arrow"
-         playButton.addEventListener("click" , (event) => onPlayTrack(event, {image, artistNames , name , previewURL , duration , id }))
+         playButton.addEventListener("click" , (event) => playTrack(event, {image, artistNames , name , previewURL , duration , id }))
          track.querySelector('p').appendChild(playButton)
          trackSections.appendChild(track)
    }
@@ -295,6 +304,8 @@ document.addEventListener("DOMContentLoaded" , () =>{
    const songDurationCompleted = document.querySelector("#song-duration-completed")
    const songProgress = document.querySelector("#progress")
    const timeline = document.querySelector("#timeline")
+   const audioControl = document.querySelector("#audio-control")
+
    let progressInterval
 
    loadUserProfile()
@@ -314,6 +325,14 @@ document.addEventListener("DOMContentLoaded" , () =>{
     })
  
    audio.addEventListener("play" , () => { 
+      const selectedTrackId = audioControl.getAttribute("data-track-id")
+      const tracks = document.querySelector("#tracks")
+      const playingTrack = tracks?.querySelector("section.playing")
+      const selectedTrack = tracks?.querySelector(`[id="${selectedTrackId}"]`)
+      if(playingTrack?.id !== selectedTrack?.id){
+          playingTrack.classList.remove("playing")
+      }
+      selectedTrack?.classList.add("playing")
       progressInterval = setInterval(() => {
          if(audio.paused)
           {
@@ -322,13 +341,15 @@ document.addEventListener("DOMContentLoaded" , () =>{
          songDurationCompleted.textContent = `${audio.currentTime.toFixed(0)<10 ? "0:0" + audio.currentTime.toFixed(0): "0:" + audio.currentTime.toFixed(0)}`
          songProgress.style.width = `${(audio.currentTime / audio.duration) * 100}%`
          }, 100);
-        updateIconsForPlayMode()
+        updateIconsForPlayMode(selectedTrackId)
    })
 
    audio.addEventListener("pause" , () =>{
         if(progressInterval){
              clearInterval(progressInterval)
          }
+         const selectedTrackId = audioControl.getAttribute("data-track-id")
+         updateIconsForPlayMode(selectedTrackId)
    })
 
 
