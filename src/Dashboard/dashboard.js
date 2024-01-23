@@ -333,6 +333,13 @@ document.addEventListener("click" , () => {
    audio.volume = volume.value / 100
   })
 
+  timeline.addEventListener("click" , (event ) => {
+   const timelineWidth = window.getComputedStyle(timeline).width
+   const timeToSeek = ( e.offsetX / parseInt(timelineWidth)) * audio.duration
+   audio.currentTime = timeToSeek 
+   songProgress.style.width = `${(audio.currentTime / audio.duration) * audio.duration *100}%`
+}, false)
+
   window.addEventListener("popstate" , (event) => {
    loadSections(event.state)
   })
