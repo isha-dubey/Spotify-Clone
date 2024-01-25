@@ -1,4 +1,4 @@
-import { ENDPOINT, logout, SECTIONTYPE } from "../common"
+import { ENDPOINT, getItemFromLocalStorage, LOADED_TRACKS, logout, SECTIONTYPE, setItemsInLocalStorage } from "../common"
 import { FetchRequest } from "../api"
 
 const onProfileClick = (event) => 
@@ -159,6 +159,31 @@ const togglePlay = () => {
    }
 }
 
+const findCurrentTrack = () => {
+   const audioControl = document.querySelector("#audio-control")
+   const  trackId = audioControl.getAttribute("data-track-id")
+   if(trackId){
+      const loadedTracks = getItemFromLocalStorage(LOADED_TRACKS)
+      const currentTrackIndex = loadedTracks?.findIndex(trk => trk.id === trackId)
+      return {currentTrackIndex , tracks:loadedTracks}
+   }
+   return null
+}
+
+const playNextTrack = () =>{
+  const {currentTrackIndex = -1 , tracks = nulls} = findCurrentTrack() ?? {}
+  if(currentTrackIndex > -1 && currentTrackIndex < tracks?.length -1){
+      playTrack(null , track[currentTrackIndex] +1)
+  }
+}
+
+const playPrevTrack = () =>{
+   const {currentTrackIndex = -1 , tracks = nulls} = findCurrentTrack() ?? {}
+   if(currentTrackIndex > -1 && currentTrackIndex < tracks?.length -1){
+       playTrack(null , track[currentTrackIndex] +1)
+   }
+}
+
 const playTrack = (event , {image, artistNames , name , previewURL , duration , id }) => {
    if(event?.stopPropagation){
       event.stopPropagation
@@ -191,8 +216,9 @@ const playTrack = (event , {image, artistNames , name , previewURL , duration , 
 
 const loadPlaylistTracks = ({ tracks }) => {
    const trackSections = document.querySelector("#tracks")
-   let trackNo = 1 
-   for ( let trackitem  of tracks.items ){
+   let trackNo = 1
+   const loadedTracks = [] 
+   for ( let trackitem  of tracks.items.filter(items => items.track.preview_url) ){
          let {id , artists , name , album , duration_ms: duration , preview_url : previewURL} = trackitem.track
          let track = document.createElement("section")
          track.id = id
@@ -220,7 +246,10 @@ const loadPlaylistTracks = ({ tracks }) => {
          playButton.addEventListener("click" , (event) => playTrack(event, {image, artistNames , name , previewURL , duration , id }))
          track.querySelector('p').appendChild(playButton)
          trackSections.appendChild(track)
+         loadedTracks.push({id , artistNames , name , album , duration , preview_url , image})
    }
+
+   setItemsInLocalStorage(LOADED_TRACKS , loadedTracks)
 }
 
 
@@ -305,7 +334,8 @@ document.addEventListener("DOMContentLoaded" , () =>{
    const songProgress = document.querySelector("#progress")
    const timeline = document.querySelector("#timeline")
    const audioControl = document.querySelector("#audio-control")
-
+   const next = document.querySelector("#next")
+   const prev = document.querySelector("#prev")
    let progressInterval
 
    loadUserProfile()
@@ -366,6 +396,10 @@ document.addEventListener("DOMContentLoaded" , () =>{
       audio.currentTime = timeToSeek 
       songProgress.style.width = `${(audio.currentTime / audio.duration) * audio.duration *100}%`
    }, false)
+
+   next.addEventListener("click" , playNextTrack)
+
+   prev.addEventListener("click" , playPrevTrack)
 
    window.addEventListener("popstate" , (event) => {
      loadSections(event.state)
