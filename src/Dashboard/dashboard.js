@@ -199,21 +199,21 @@ const findCurrentTrack = () => {
 
 const playNextTrack = () =>{
   const {currentTrackIndex = -1 , tracks = null} = findCurrentTrack() ?? {}
-  if(currentTrackIndex > -1 && currentTrackIndex < tracks?.length -1){
-      playTrack(null , tracks[currentTrackIndex] +1)
+  if(currentTrackIndex > -1 && currentTrackIndex < tracks?.length - 1){
+      playTrack(null , tracks[currentTrackIndex] + 1)
   }
 }
 
 const playPrevTrack = () =>{
    const {currentTrackIndex = -1 , tracks = null} = findCurrentTrack() ?? {}
    if(currentTrackIndex > 0 ){
-       playTrack(null , tracks[currentTrackIndex] -1)
+       playTrack(null , tracks[currentTrackIndex] - 1)
    }
 }
 
-const playTrack = (event , {image, artistNames , name , previewURL , duration , id }) => {
-   if(event?.stopPropagation){
-      event.stopPropagation
+const playTrack = (e , { image, artistNames , name , previewURL , duration , id } ) => {
+   if(e?.stopPropagation){
+      e.stopPropagation()
    }
   const buttonWithDataPlay = document.querySelector(`[data-play="true"]`)
    if(audio.src === previewURL) {
@@ -224,19 +224,18 @@ const playTrack = (event , {image, artistNames , name , previewURL , duration , 
              button.setAttribute("data-play","false") 
             console.log(button) })
 
-   buttonWithDataPlay?.setAttribute("data-play" , "false") 
-   console.log(image, artistNames , name , previewURL , duration , id , "hi")
    const nowPlayingSongImage = document.querySelector("#now-playing-image")
    const songTitle = document.querySelector("#now-playing-song")
    const artists = document.querySelector("#now-playing-artists")
    const audioControl = document.querySelector("#audio-control")
+   const songInfo = document.querySelector("#song-info")
    audioControl.setAttribute("data-track-id" , id)
    nowPlayingSongImage.src = image.url
    songTitle.textContent = name
    artists.textContent = artistNames
    audio.src = previewURL 
    audio.play()
-   //timeline.addEventListener("click" , () =>  onNowPlayingPlayButtonClicked(id) )
+   songInfo.classList.remove("invisible")
 }}
 
 
@@ -245,12 +244,12 @@ const loadPlaylistTracks = ({ tracks }) => {
    let trackNo = 1
    const loadedTracks = [] 
    for ( let trackitem  of tracks.items.filter(items => items.track.preview_url) ){
-         let {id , artists , name , album , duration_ms: duration , preview_url : previewURL} = trackitem.track
-         let track = document.createElement("section")
+         var {id , artists , name , album , duration_ms: duration , preview_url : previewURL} = trackitem.track
+         var track = document.createElement("section")
          track.id = id
          track.className = "track p-1 grid grid-cols-[50px_1fr_1fr_50px] gap-4 items-center justify-items-start text-secondary rounder-md hover:bg-light-black"
-         let image = album.images.find(img => img.height === 64)
-         let artistNames = Array.from(artists , artist => artist.name).join(", ")
+         var image = album.images.find(img => img.height === 64)
+         var artistNames = Array.from(artists , artist => artist.name).join(", ")
          track.innerHTML = ` 
             <p class="relative w-full flex items-center justify-self-center"><span class="tracknum" >${trackNo++}</span></p>
             <section class="grid grid-cols-[auto_1fr] place-items-center gap-2 ">
@@ -266,9 +265,12 @@ const loadPlaylistTracks = ({ tracks }) => {
          track.addEventListener("click" , (event)  => onTrackSelection(id , event) )
          const playButton = document.createElement("button")
          playButton.id = `play-track-${id}`
-         playButton.className = `play w-fill absolute left-0 text-lg invisible material-symbols-outlined `
+         playButton.className = `play w-full absolute left-0 text-lg invisible material-symbols-outlined `
          playButton.textContent = "play_arrow"
-         playButton.addEventListener("click" , (event) => playTrack(event, { image, artistNames , name , previewURL , duration , id }))
+         playButton.addEventListener("click" , (e) =>
+         
+            playTrack( e , { image, artistNames , name , previewURL , duration , id })
+         ) 
          track.querySelector("p").appendChild(playButton)
          trackSections.appendChild(track)
          loadedTracks.push({id , artistNames , name , album , duration , previewURL , image})
@@ -278,6 +280,7 @@ const loadPlaylistTracks = ({ tracks }) => {
 }
 
 
+
 const fillContentForPlaylist = async(playlistid) => {
    const playlist = await FetchRequest(`${ENDPOINT.playlist}/${playlistid}`)
    console.log(playlist)
@@ -285,15 +288,17 @@ const fillContentForPlaylist = async(playlistid) => {
    const {name , description, tracks , images} = playlist
    const coverElement = document.querySelector("#cover-content")
    coverElement.innerHTML = `    
-        <section class="">
+        <section class="flex gap-16">
          <img class= " object-contain h-36 w-36" src="${images[0].url}" alt="">
-        <h2 id="playlist-name" class="text-4xl">${name}</h2>
+        <section>
+         <h2 id="playlist-name" class="text-4xl font-bold">${name}</h2>
         <p id="playlist-detials">${tracks.items.length} songs </p>
+        </section>
         </section>`
 
    const pageContent = document.querySelector("#page-content")
    pageContent.innerHTML = ` 
-         <header id="playlist-header" class="mx-8 py-4 border-secondary border-b-[0.5px] z-10 ">
+         <header id="playlist-header" class="mx-8  border-secondary border-b-[0.5px] z-10 ">
             <nav class="py-2 ">
                <ul class="grid grid-cols-[50px_1fr_1fr_50px] gap-4 text-secondary ">
                  <li class="justify-self-center" >#</li>
@@ -314,22 +319,21 @@ const fillContentForPlaylist = async(playlistid) => {
 
 const onContentScroll =   (event) => {
    const {scrollTop} = event.target
-   const header = document.querySelector(".header")
-   if(scrollTop >= header.offsetHeight){
-       header.classList.add("sticky" , "top-0" , "bg-black" )
-       header.classList.remove("bg-transparent")
-   } else {
-       header.classList.remove("sticky" , "top-0" , "bg-black" )
-       header.classList.add("bg-transparent")
-   }
-   if (history.state.type === SECTIONTYPE.PLAYLIST){
-    
+   const Header = document.querySelector(".header")
    const coverElement = document.querySelector("#cover-content")
+   const totalheight = coverElement.offsetHeight
+   const coverOpacity = 100 - (scrollTop >= totalheight ? 100: ((scrollTop/totalheight) * 100))
+   const headerOpacity = scrollTop >= Header.offsetHeight? 100: ((scrollTop/Header.offsetHeight) * 100)
+   coverElement.style.opacity = `${coverOpacity}%`
+   Header.style.background = `bg-black[${headerOpacity}])`
+ 
+   if (history.state.type === SECTIONTYPE.PLAYLIST){
+      console.log(history.state.type)
    const playlistHeader  = document.querySelector("#playlist-header")
-   if(scrollTop >= (coverElement.offsetHeight - header.offsetHeight)){
+   if(coverOpacity <= 35){
         playlistHeader.classList.add("sticky", "bg-black-secondary" , "px-8")
         playlistHeader.classList.remove("mx-8")
-        playlistHeader.style.top = `${header.offsetHeight}px`
+        playlistHeader.style.top = `${Header.offsetHeight}px`
    } else {
        playlistHeader.classList.remove("sticky", "bg-black-secondary" , "px-8")
         playlistHeader.classList.add("mx-8")

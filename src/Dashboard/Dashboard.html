@@ -12,11 +12,11 @@
 
     <main class="h-full grid-template-areas grid grid-cols-[250px_1fr] grid-rows-[1fr_auto]">
     <aside class="sidenav">sidenav</aside>
-    <article  class=" content relative bg-transparent overflow-auto ">
+    <article  class=" content relative overflow-auto bg-transparent ">
 
-        <header class="header  bg-transparent px-8 py-4  z-10">
-            <nav class="flex justify-end ">
-                <button id="user-profile-button" class="flex items-center gap-x-2 rounded-2xl p-1 px-2 hover:bg-light-black">
+        <header class="header sticky  top-0 bg-black/[0] px-8 py-4  z-110">
+            <nav class="relative flex justify-end ">
+                <button id="user-profile-button" class="flex items-center gap-x-2 rounded-2xl bg-black p-1 px-2 hover:bg-light-black">
                     <section>
                         <svg 
                             id="default-image"
@@ -24,7 +24,7 @@
                              fill="none" viewBox="0 0 24 24"
                             stroke-width="1.5"
                             stroke="currentColor"
-                            class="h-8 w-8 rounded-full bg-gray">
+                            class="h-6 w-8 rounded-full bg-gray">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                       </svg>
                       </section>
@@ -40,17 +40,17 @@
         </header>
 
         <article id="cover-content"
-        class="grid  grid-cols-[auto-1fr] pt-20 gap-4 absolute -z-[1] h-72 w-full top-0 px-8 py-4 bg-gradient-to-b from-light-black to-black-primary">
+        class="grid h-80  grid-cols-[250px_1fr] auto-rows-[250px_1fr] pt-16 gap-4 absolute -z-[1]  w-full top-0 px-4 bg-gradient-to-b from-light-black to-black-primary">
             <!-- <h1 class="text-6xl "> Hello Isha </h1> -->
+            <img src="" alt="">
             <section class="">
-                <img src="" alt="">
                 <h2 id="playlist-name" class="text-4xl">PlayList Name</h2>
                 <p id="playlist-artist">artists</p>
                 <p id="playlist-detials">de</p>
             </section>
         </article>
 
-        <section id="page-content" class=" bg-black-primary mt-52 ">
+        <section id="page-content" class=" bg-black-primary mt-64 ">
            <header class="px-8">
             <nav>
                  <ul class="grid grid-cols-[50px_2fr_1fr_50px] gap-4 text-secondary">
@@ -80,7 +80,7 @@
         <footer class="now-playing border-t border-t-light-black bg-black-secondary  text-secondary p-4">
             
         <section class=" grid grid-cols-[1fr_2fr_1fr] gap-4">
-            <section class="grid grid-cols-[auto_1fr] place-content-center gap-4 " >
+            <section id="song-info" class="grid grid-cols-[auto_1fr] place-content-center gap-4 invisible " >
                 <img id="now-playing-image" class="h-12 w-12" src="" srcset="">
                 <section class="flex flex-col justify-center ">
                     <h2 id="now-playing-song" class="text-sm font-semibold text-white">song title</h2>
@@ -90,17 +90,17 @@
             <!-- section for audio control -->
             <section id="audio-control" class=" flex flex-col justify-center items-center ">
               <section class="flex items-center justify-center  ">
-                <button id="prev" class="hover:text-white"><span style="font-size: 48px ;" class="material-symbols-outlined"> skip_previous</span></button>
-                <button id="play" class="hover:text-white"><span style="font-size: 48px ;" class="material-symbols-outlined">play_circle</span></button>
-                <button id="next" class="hover:text-white"><span style="font-size: 48px ;" class="material-symbols-outlined">skip_next</span></button>
+                <button id="prev" class="hover:text-white"><span style="font-size: 36px ;" class="material-symbols-outlined"> skip_previous</span></button>
+                <button id="play" class="hover:text-white"><span style="font-size: 40px ;" class="material-symbols-outlined">play_circle</span></button>
+                <button id="next" class="hover:text-white"><span style="font-size: 36px ;" class="material-symbols-outlined">skip_next</span></button>
               </section>
             
-            <section class="w-full flex items-center justify-center gap-4 p-1">
-                <span id="song-duration-completed">0:00</span>
+            <section class="w-full flex items-center justify-center gap-4 ">
+                <span id="song-duration-completed" class="text-sm ">0:00</span>
                  <section id="timeline" class="bg-secondary w-full cursor-pointer  rounded-3xl">       
                 <section id="progress" class="h-2 w-0  bg-green rounded-3xl"></section>
             </section>
-            <span id="total-song-duration">0:00</span>
+            <span id="total-song-duration" class="text-sm">0:00</span>
 
             </section>
         </section>
