@@ -3,7 +3,7 @@ import { FetchRequest } from "../api"
 
 const audio = new Audio()
 const audioControl = document.querySelector("#audio-control");
-
+let displayName;
 
 const onProfileClick = (event) => 
 {
@@ -17,24 +17,29 @@ const onProfileClick = (event) =>
 }
 
 
-const loadUserProfile = async() =>
+const loadUserProfile = () =>
 {
- const defaultImage = document.querySelector("#default-image")
- const profileButton = document.querySelector("#user-profile-button")
- const displayNameElement = document.querySelector("#display-name")
- const {display_name : displayName , images} = await FetchRequest(ENDPOINT.userinfo)
-  
- if(images?.length)
- {
-    defaultImage.classList.add("hidden")
- } else {
-    defaultImage.classList.remove("hidden")
- }
-
- profileButton.addEventListener("click" , onProfileClick )
- displayNameElement.textContent = displayName
+   return new Promise(async (resolve , reject) => {
+    
+    const defaultImage = document.querySelector("#default-image")
+    const profileButton = document.querySelector("#user-profile-button")
+    const displayNameElement = document.querySelector("#display-name")
+    const {display_name : displayName , images} = await FetchRequest(ENDPOINT.userinfo)
+     
+    if(images?.length)
+    {
+       defaultImage.classList.add("hidden")
+    } else {
+       defaultImage.classList.remove("hidden")
+    }
+   
+    profileButton.addEventListener("click" , onProfileClick )
+    displayNameElement.textContent = displayName
+   resolve({displayName})
+     })
 
 }
+
 
 
 const onPlaylistItemClicked = (event , id) => 
@@ -79,6 +84,8 @@ const loadPlaylists = () => {
 
 const fillContentForDashboard = () => 
 {
+   const coverContent = document.querySelector("#cover-content")
+   coverContent.innerHTML = `<h1 class="text-6xl">Hello, ${displayName} </h1>`
    const pageContent = document.querySelector("#page-content")
    const playlistMap =  new Map([["featured" , "featured-playlist-items"] , [ "toplists" , "top-playlist-items"]])
    let innerHTML = ''
@@ -244,12 +251,12 @@ const loadPlaylistTracks = ({ tracks }) => {
    let trackNo = 1
    const loadedTracks = [] 
    for ( let trackitem  of tracks.items.filter(items => items.track.preview_url) ){
-         var {id , artists , name , album , duration_ms: duration , preview_url : previewURL} = trackitem.track
-         var track = document.createElement("section")
+         let {id , artists , name , album , duration_ms: duration , preview_url : previewURL} = trackitem.track
+         let track = document.createElement("section")
          track.id = id
          track.className = "track p-1 grid grid-cols-[50px_1fr_1fr_50px] gap-4 items-center justify-items-start text-secondary rounder-md hover:bg-light-black"
-         var image = album.images.find(img => img.height === 64)
-         var artistNames = Array.from(artists , artist => artist.name).join(", ")
+         let image = album.images.find(img => img.height === 64)
+         let artistNames = Array.from(artists , artist => artist.name).join(", ")
          track.innerHTML = ` 
             <p class="relative w-full flex items-center justify-self-center"><span class="tracknum" >${trackNo++}</span></p>
             <section class="grid grid-cols-[auto_1fr] place-items-center gap-2 ">
@@ -281,7 +288,7 @@ const loadPlaylistTracks = ({ tracks }) => {
 
 
 
-const fillContentForPlaylist = async(playlistid) => {
+const fillContentForPlaylist = async (playlistid) => {
    const playlist = await FetchRequest(`${ENDPOINT.playlist}/${playlistid}`)
    console.log(playlist)
    
@@ -317,30 +324,45 @@ const fillContentForPlaylist = async(playlistid) => {
 }
 
 
-const onContentScroll =   (event) => {
-   const {scrollTop} = event.target
-   const Header = document.querySelector(".header")
-   const coverElement = document.querySelector("#cover-content")
-   const totalheight = coverElement.offsetHeight
-   const coverOpacity = 100 - (scrollTop >= totalheight ? 100: ((scrollTop/totalheight) * 100))
-   const headerOpacity = scrollTop >= Header.offsetHeight? 100: ((scrollTop/Header.offsetHeight) * 100)
-   coverElement.style.opacity = `${coverOpacity}%`
-   Header.style.background = `bg-black[${headerOpacity}])`
- 
-   if (history.state.type === SECTIONTYPE.PLAYLIST){
-      console.log(history.state.type)
-   const playlistHeader  = document.querySelector("#playlist-header")
-   if(coverOpacity <= 35){
-        playlistHeader.classList.add("sticky", "bg-black-secondary" , "px-8")
-        playlistHeader.classList.remove("mx-8")
-        playlistHeader.style.top = `${Header.offsetHeight}px`
-   } else {
-       playlistHeader.classList.remove("sticky", "bg-black-secondary" , "px-8")
-        playlistHeader.classList.add("mx-8")
-        playlistHeader.style.top = `revert`
-   
+const onContentScroll = (event) => {
+
+   const { scrollTop } = event.target;
+   const header = document.querySelector(".header");
+   const coverElement = document.querySelector("#cover-content");
+   const totalHeight = coverElement.offsetHeight;
+   const fiftyPercentHeight = totalHeight / 2;
+   const coverOpacity = 100 - (scrollTop >= totalHeight ? 100 : (scrollTop / totalHeight) * 100);
+   coverElement.style.opacity = `${coverOpacity}%`;
+
+   let headerOpacity = 0;
+   // once 50% of cover element is crossed, start increasing the opacity
+   if (scrollTop >= fiftyPercentHeight && scrollTop <= totalHeight) {
+       let totatDistance = totalHeight - fiftyPercentHeight;
+       let coveredDistance = scrollTop - fiftyPercentHeight;
+       headerOpacity = (coveredDistance / totatDistance) * 100;
+   } else if (scrollTop > totalHeight) {
+       headerOpacity = 100;
+   } else if (scrollTop < fiftyPercentHeight) {
+       headerOpacity = 0;
    }
- }
+   header.style.background = `rgba(0 0 0 / ${headerOpacity}%)`
+
+   if (history.state.type === SECTIONTYPE.PLAYLIST) {
+       const playlistHeader = document.querySelector("#playlist-header");
+       if (headerOpacity >= 60) {
+           playlistHeader.classList.add("sticky", "bg-black-secondary", "px-8");
+           playlistHeader.classList.remove("mx-8");
+           playlistHeader.style.top = `${header.offsetHeight}px`;
+
+       } else {
+           playlistHeader.classList.remove("sticky", "bg-black-secondary", "px-8");
+           playlistHeader.classList.add("mx-8");
+           playlistHeader.style.top = `revert`;
+
+       }
+
+   }
+
 }
 
 
@@ -357,7 +379,7 @@ const loadSections = (section) => {
 }
 
 
-document.addEventListener("DOMContentLoaded" , () =>{
+document.addEventListener("DOMContentLoaded" , async () =>{
  
    const volume = document.querySelector("#volume")
    const audioControl = document.querySelector("#audio-control")
@@ -369,12 +391,12 @@ document.addEventListener("DOMContentLoaded" , () =>{
    const prev = document.querySelector("#prev")
    let progressInterval
 
-   loadUserProfile()
-// const section = { type : SECTIONTYPE.DASHBOARD }
-const section = { type : SECTIONTYPE.PLAYLIST , playlist : "37i9dQZF1DWXVJK4aT7pmk" }
+  ({displayName} = await loadUserProfile())
+ const section = { type : SECTIONTYPE.DASHBOARD }
+//const section = { type : SECTIONTYPE.PLAYLIST , playlist : "37i9dQZF1DWXVJK4aT7pmk" }
 
-// history.pushState(section , "" , "")
-   history.pushState(section , "" , `playlist/${section.playlist}`)
+ history.pushState(section , "" , "")
+//   history.pushState(section , "" , `playlist/${section.playlist}`)
    
    loadSections(section)
    
