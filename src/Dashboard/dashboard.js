@@ -378,6 +378,24 @@ const loadSections = (section) => {
    document.querySelector(".content").addEventListener("scroll" , onContentScroll)
 }
 
+const onUserPLaylistClick = (id) => {
+   const section = {type:SECTIONTYPE.PLAYLIST , playlist: id}
+   history.pushState(section,"", `/`)
+}
+
+const loadUserPlaylists = async () => {
+ const playlist = await FetchRequest(ENDPOINT.userPlaylist) 
+ const userPlaylistSection = ocument.querySelector("#user-playlists > ul")
+ userPlaylistSection.innerHTML = ``
+ for(let{name , id} of playlists.items){
+   const li = document.createElement("li")
+   li.textContent = name
+   li.className = "cursor-pointer hover:text-primary"
+   li.addEventListener("click", () => {
+
+   } )
+ }
+}
 
 document.addEventListener("DOMContentLoaded" , async () =>{
  
@@ -390,7 +408,7 @@ document.addEventListener("DOMContentLoaded" , async () =>{
    const next = document.querySelector("#next")
    const prev = document.querySelector("#prev")
    let progressInterval
-
+loadUserPlaylists()
   ({displayName} = await loadUserProfile())
  const section = { type : SECTIONTYPE.DASHBOARD }
 //const section = { type : SECTIONTYPE.PLAYLIST , playlist : "37i9dQZF1DWXVJK4aT7pmk" }

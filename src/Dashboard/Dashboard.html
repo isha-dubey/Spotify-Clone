@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../assets/Spotify_Icon_RGB_Green.png" type="image/x-icon">
     <title>Spotify Player</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="../style.css">  <!-- //this should be added in every html file -->
@@ -12,14 +13,26 @@
 
     <main class="h-full grid-template-areas grid grid-cols-[250px_1fr] grid-rows-[1fr_auto]">
     <aside class="sidenav">
-        <nav>
+        <nav class="flex flex-col items-start gap-8 py-8 px-4">   
             <section>
-                <img src="" alt="">
-            </section>
-        </nav>
-
-
-
+           <a href="/">
+               <img class="h-10 w-full object-contain" src="../assets/Spotify_Logo_RGB_White.png" alt="Spotify Logo">
+            </a>
+        </section>
+            <section>
+            </section>  
+            <ul class="flex flex-col text-sm text-secondary gap-4">
+                <li class="cursor-pointer flex items-center gap-2 hover:text-white">
+                   <span class="material-symbols-outlined">home</span> <span>Home</span></li>
+                   <li class="cursor-pointer flex items-center gap-2 hover:text-white"> <span class="material-symbols-outlined">search</span> <span>Search</span></li>
+            </ul>
+        </section>
+        <section id="user-playlists" class="w-full border-t border-light-black pt-4">
+<ul class="flex flex-col gap-4 text-sm text-secondary">
+    <li>MY Playlist 1</li>
+</ul>
+        </section>
+    </nav>
     </aside>
     <article  class=" content relative overflow-auto bg-transparent ">
 
