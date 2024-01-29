@@ -1,6 +1,12 @@
 import { ENDPOINT, getItemFromLocalStorage, LOADED_TRACKS, logout, SECTIONTYPE, setItemsInLocalStorage } from "../common"
 import { FetchRequest } from "../api"
 
+// need to fix login functionality, new window pops up but you need to get dashboard in same window
+// next and prev functionality
+// description of playlists add more functionalityies
+// add more functionalities on profile menu
+
+
 const audio = new Audio()
 const audioControl = document.querySelector("#audio-control");
 let displayName;
@@ -380,20 +386,22 @@ const loadSections = (section) => {
 
 const onUserPLaylistClick = (id) => {
    const section = {type:SECTIONTYPE.PLAYLIST , playlist: id}
-   history.pushState(section,"", `/`)
+   history.pushState(section,"", `/dashboard/playlist/${id}`)
+   loadSections(section)
 }
 
 const loadUserPlaylists = async () => {
- const playlist = await FetchRequest(ENDPOINT.userPlaylist) 
- const userPlaylistSection = ocument.querySelector("#user-playlists > ul")
- userPlaylistSection.innerHTML = ``
- for(let{name , id} of playlists.items){
+ const playlists = await FetchRequest(ENDPOINT.userPlaylist) 
+ console.log(playlists);
+ const userPlaylistSection = document.querySelector("#user-playlists > ul")
+ userPlaylistSection.innerHTML = ""
+ for(let {name , id } of playlists.items){
    const li = document.createElement("li")
    li.textContent = name
    li.className = "cursor-pointer hover:text-primary"
-   li.addEventListener("click", () => {
-
+   li.addEventListener("click", () => { onUserPLaylistClick(id)
    } )
+   userPlaylistSection.appendChild(li)
  }
 }
 
@@ -408,8 +416,8 @@ document.addEventListener("DOMContentLoaded" , async () =>{
    const next = document.querySelector("#next")
    const prev = document.querySelector("#prev")
    let progressInterval
-loadUserPlaylists()
-  ({displayName} = await loadUserProfile())
+   ( {displayName} = await loadUserProfile())
+   loadUserPlaylists()
  const section = { type : SECTIONTYPE.DASHBOARD }
 //const section = { type : SECTIONTYPE.PLAYLIST , playlist : "37i9dQZF1DWXVJK4aT7pmk" }
 
